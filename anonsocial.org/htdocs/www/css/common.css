@@ -1,0 +1,79 @@
+body {
+  background: none repeat scroll 0 0 #FFFFFF;
+  font-family: tahoma,verdana,arial,sans-serif,lucida sans;
+  text-align: left;
+  font-size: 11px;
+  margin: 0;
+  padding: 0;
+}
+
+header, footer, aside, nav, article {
+  display: block;
+}
+
+div#pageLayout {
+  margin: 0 auto;
+  padding: 0;
+  width: 791px;
+}
+
+header#pageHeader {
+  background-color: #303030;
+  color: #FFFFFF;
+  height: 45px;
+  width: 791px;
+  border-radius-bottomleft: 10px;
+  border-radius-bottomright: 10px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  -moz-border-radius-bottomleft: 10px;
+  -moz-border-radius-bottomright: 10px;
+  -webkit-border-bottom-left-radius: 10px;
+  -webkit-border-bottom-right-radius: 10px;
+  padding: 0.1em 1em 0.1em 1em;
+  font-size: 24pt;
+}
+
+header#contentHeader {
+  background-color: #D0D0D0;
+  border-radius-bottomleft: 3px;
+  border-radius-bottomright: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  -moz-border-radius-bottomright: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -webkit-border-bottom-right-radius: 3px;
+  padding: 0.1em 1em 0.1em;
+  font-weight: bold;
+}
+
+header#contentHeader span {
+  color: #606060;
+}
+
+div#pageContent {
+  padding: 1em 1em 1em 1em;
+}
+
+nav#sideBar {
+  float: left;
+  margin: 5px 0 0 4px;
+  padding-bottom: 10px;
+  width: 118px;
+}
+
+div#pageBody {
+  float: right;
+  margin: 0 15px 0 12px;
+  width: 632px;
+}
+
+footer.bFooter {
+  clear: both;
+  font-size: 10px;
+  line-height: 15px;
+  margin: 0;
+  padding: 5px 0 0;
+  text-align: center;
+}

@@ -1,0 +1,6 @@
+1. Keys corresponding real user_id. In order, $_REQUEST var - table - column
+wallmsg_id - ab_wall.wallmsg_id - from_id
+post_id - ab_posts.post_id - user_id
+privmsg_id - ab_privmsgs.privmsg_id - from_id
+staff_id - ab_board_staff - user_id
+
