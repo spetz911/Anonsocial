@@ -10,7 +10,7 @@ CREATE TABLE ab_users (
 
 CREATE TABLE ab_wall (
   wallmsg_id SERIAL PRIMARY KEY,
-  /* May be positive (user_id) or negative (-board_id) */
+--  /* May be positive (user_id) or negative (-board_id) */
   to_id integer NOT NULL,
   from_id integer NOT NULL,
   FOREIGN KEY (from_id) REFERENCES ab_users,
@@ -38,12 +38,19 @@ CREATE TABLE ab_boards (
   board_name character varying(35) NOT NULL
 );
 
+CREATE TABLE ab_threads (
+  thread_id SERIAL PRIMARY KEY,
+  user_id character varying (8) NOT NULL,
+  subject character varying(35) NOT NULL
+);
+
+
 CREATE TYPE staff_role_t AS ENUM ('owner', 'admin', 'mod');
 
 CREATE TABLE ab_board_staff (
-  /* There is NOT primary key, just another way to link it with user's page */
+--  /* There is NOT primary key, just another way to link it with user's page */
   staff_id SERIAL NOT NULL UNIQUE,
-  /* And there is real primary key */
+--  /* And there is real primary key */
   PRIMARY KEY (board_id, user_id),
   board_id integer NOT NULL,
   FOREIGN KEY (board_id) REFERENCES ab_boards,
@@ -67,3 +74,4 @@ CREATE TABLE ab_posts (
 );
 
 CREATE INDEX ab_posts_display_idx ON ab_posts (board_id, parent_id);
+

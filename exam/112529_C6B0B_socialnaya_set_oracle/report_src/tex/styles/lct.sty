@@ -1,0 +1,109 @@
+\usepackage[cp1251]{inputenc}
+\usepackage[T2B]{fontenc}
+\usepackage[english,russian]{babel}
+
+\frenchspacing
+
+
+%< МАТЕМАТИКА
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\usepackage{amsmath}
+	\usepackage{amsthm}
+	\usepackage{amssymb}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[usenames]{color}
+
+
+
+\usepackage{hyperref}
+\usepackage{array}
+
+\usepackage{csquotes}
+\DeclareQuoteStyle{russian}
+	{\guillemotleft}{\guillemotright}[0.025em]
+	{\quotedblbase}{\textquotedblleft}
+\ExecuteQuoteOptions{style=russian}
+
+\usepackage{graphicx}
+\newtheorem{theorem}{Теоремма}
+\usepackage{multicol,multirow}
+
+%< ЛИСТИНГИ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\usepackage{listings}
+		\lstset{
+				language=SQL,
+				tabsize=2,
+				breaklines,
+				columns=fullflexible,
+				flexiblecolumns,
+				frame=tb ,
+				numbers=left,
+				numberstyle={\footnotesize},
+				extendedchars=\true,
+				extendedchars=true,
+				inputencoding=cp1251,
+				belowcaptionskip=5pt 
+			}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\usepackage{longtable}
+
+\renewcommand{\contentsname}{Eaeoey}
+
+
+\newcounter{qsec}[subsection]
+
+\newcounter{questions}
+\newcounter{defs}
+
+
+\renewcommand{\thesubsection}{\arabic{subsection}}
+\renewcommand{\thesection}{\arabic{section}}
+
+
+\newcounter{lections}
+\setcounter{lections}{0}
+
+
+\newcommand{\FWHeader}[2]{\setcounter{section}{#1}\addtocounter{section}{-1}\section{#2}}
+\newcommand{\TPHeader}[1]{\section*{#1}}
+\newcommand{\Problem}[1]{\par\textbf{Задача: }#1}
+
+\renewcommand{\sectionmark}[1]{\markboth{%
+{\thesection\hspace{1em}#1}}% левая пометка
+{}% правая пометка (она пуста)
+}
+
+\newcommand{\lection}[1]{\addtocounter{lections}{1}  \textbf{Лекция \arabic{lections}: }#1 }
+
+
+\theoremstyle{definition}
+
+\newtheorem{DEF}{Определение \addtocounter{defs}{1} }
+\newtheorem{Q}{ \huge <?>  \addtocounter{questions}{1}}
+\newtheorem{q}{  <?>  \addtocounter{questions}{1}}
+\newtheorem{SUBDEF}{Пояснение}
+
+
+
+%< ПИТОН
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\usepackage{styles/python}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%< ПАРАМЕТРЫ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\oddsidemargin=-0.4mm
+	\textwidth=160mm
+	\topmargin=4.6mm
+	\textheight=210mm
+	\parindent=0pt
+	\parskip=3pt
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

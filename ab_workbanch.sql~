@@ -1,0 +1,645 @@
+CREATE TABLE ab_board (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    dir character varying(50) NOT NULL
+);
+
+CREATE TABLE ab_msg (
+    id integer NOT NULL,
+    message text NOT NULL,
+    "time" time  NOT NULL,
+    show_name boolean NOT NULL,
+    show_tripcode boolean NOT NULL
+);
+
+CREATE TABLE ab_post (
+    msg_ptr_id integer NOT NULL,
+    thread_id integer NOT NULL,
+    user_id integer NOT NULL,
+    parent_id integer NOT NULL,
+    subject character varying(50) NOT NULL
+);
+
+CREATE TABLE ab_privmsg (
+    msg_ptr_id integer NOT NULL,
+    to_id character varying(50) NOT NULL,
+    from_id character varying(50) NOT NULL
+);
+
+CREATE TABLE ab_tag (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    description text NOT NULL
+);
+
+
+CREATE TABLE ab_thread (
+    id integer NOT NULL,
+    board_id integer NOT NULL,
+    user_id integer NOT NULL,
+    tag_id integer NOT NULL,
+    subject character varying(50) NOT NULL
+);
+
+
+CREATE TABLE ab_user (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    tripcode character varying(50) NOT NULL,
+    regdate time without time zone NOT NULL,
+    email character varying(75) NOT NULL,
+    password character varying(50) NOT NULL,
+    deleted boolean NOT NULL
+);
+
+CREATE TABLE ab_wallmsg (
+    msg_ptr_id integer NOT NULL,
+    to_id character varying(50) NOT NULL,
+    from_id character varying(50) NOT NULL
+);
+
+
+CREATE TABLE auth_group (
+    id integer NOT NULL,
+    name character varying(80) NOT NULL
+);
+
+
+CREATE SEQUENCE auth_group_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+CREATE TABLE auth_group_permissions (
+    id integer NOT NULL,
+    group_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+
+CREATE TABLE auth_message (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    message text NOT NULL
+);
+
+
+CREATE TABLE auth_permission (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    content_type_id integer NOT NULL,
+    codename character varying(100) NOT NULL
+);
+
+
+CREATE TABLE auth_user (
+    id integer NOT NULL,
+    username character varying(30) NOT NULL,
+    first_name character varying(30) NOT NULL,
+    last_name character varying(30) NOT NULL,
+    email character varying(75) NOT NULL,
+    password character varying(128) NOT NULL,
+    is_staff boolean NOT NULL,
+    is_active boolean NOT NULL,
+    is_superuser boolean NOT NULL,
+    last_login timestamp with time zone NOT NULL,
+    date_joined timestamp with time zone NOT NULL
+);
+
+
+CREATE TABLE auth_user_groups (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    group_id integer NOT NULL
+);
+
+
+CREATE TABLE auth_user_user_permissions (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    permission_id integer NOT NULL
+);
+
+
+CREATE TABLE django_admin_log (
+    id integer NOT NULL,
+    action_time timestamp with time zone NOT NULL,
+    user_id integer NOT NULL,
+    content_type_id integer,
+    object_id text,
+    object_repr character varying(200) NOT NULL,
+    action_flag smallint NOT NULL,
+    change_message text NOT NULL,
+    CONSTRAINT django_admin_log_action_flag_check CHECK ((action_flag >= 0))
+);
+
+
+
+CREATE TABLE django_content_type (
+    id integer NOT NULL,
+    name character varying(100) NOT NULL,
+    app_label character varying(100) NOT NULL,
+    model character varying(100) NOT NULL
+);
+
+
+
+CREATE TABLE django_session (
+    session_key character varying(40) NOT NULL,
+    session_data text NOT NULL,
+    expire_date timestamp with time zone NOT NULL
+);
+
+
+CREATE TABLE django_site (
+    id integer NOT NULL,
+    domain character varying(100) NOT NULL,
+    name character varying(50) NOT NULL
+);
+
+
+
+--
+-- Name: ab_board_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_board
+    ADD CONSTRAINT ab_board_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_msg_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_msg
+    ADD CONSTRAINT ab_msg_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_post_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_post
+    ADD CONSTRAINT ab_post_pkey PRIMARY KEY (msg_ptr_id);
+
+
+--
+-- Name: ab_privmsg_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_privmsg
+    ADD CONSTRAINT ab_privmsg_pkey PRIMARY KEY (msg_ptr_id);
+
+
+--
+-- Name: ab_tag_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_tag
+    ADD CONSTRAINT ab_tag_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_thread_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_thread
+    ADD CONSTRAINT ab_thread_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_user_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_user
+    ADD CONSTRAINT ab_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_wallmsg_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_wallmsg
+    ADD CONSTRAINT ab_wallmsg_pkey PRIMARY KEY (msg_ptr_id);
+
+
+--
+-- Name: auth_group_name_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group
+    ADD CONSTRAINT auth_group_name_key UNIQUE (name);
+
+
+--
+-- Name: auth_group_permissions_group_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_group_id_permission_id_key UNIQUE (group_id, permission_id);
+
+
+--
+-- Name: auth_group_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_group_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_group
+    ADD CONSTRAINT auth_group_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_message_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_message
+    ADD CONSTRAINT auth_message_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_permission_content_type_id_codename_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_content_type_id_codename_key UNIQUE (content_type_id, codename);
+
+
+--
+-- Name: auth_permission_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT auth_permission_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_groups_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_groups_user_id_group_id_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_user_id_group_id_key UNIQUE (user_id, group_id);
+
+
+--
+-- Name: auth_user_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_user
+    ADD CONSTRAINT auth_user_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_user_permissions_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: auth_user_user_permissions_user_id_permission_id_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_user_id_permission_id_key UNIQUE (user_id, permission_id);
+
+
+--
+-- Name: auth_user_username_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY auth_user
+    ADD CONSTRAINT auth_user_username_key UNIQUE (username);
+
+
+--
+-- Name: django_admin_log_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY django_admin_log
+    ADD CONSTRAINT django_admin_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_content_type_app_label_model_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY django_content_type
+    ADD CONSTRAINT django_content_type_app_label_model_key UNIQUE (app_label, model);
+
+
+--
+-- Name: django_content_type_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY django_content_type
+    ADD CONSTRAINT django_content_type_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: django_session_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY django_session
+    ADD CONSTRAINT django_session_pkey PRIMARY KEY (session_key);
+
+
+--
+-- Name: django_site_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY django_site
+    ADD CONSTRAINT django_site_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_post_parent_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_post_parent_id ON ab_post USING btree (parent_id);
+
+
+--
+-- Name: ab_post_thread_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_post_thread_id ON ab_post USING btree (thread_id);
+
+
+--
+-- Name: ab_post_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_post_user_id ON ab_post USING btree (user_id);
+
+
+--
+-- Name: ab_thread_board_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_thread_board_id ON ab_thread USING btree (board_id);
+
+
+--
+-- Name: ab_thread_tag_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_thread_tag_id ON ab_thread USING btree (tag_id);
+
+
+--
+-- Name: ab_thread_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_thread_user_id ON ab_thread USING btree (user_id);
+
+
+--
+-- Name: auth_group_permissions_group_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_group_permissions_group_id ON auth_group_permissions USING btree (group_id);
+
+
+--
+-- Name: auth_group_permissions_permission_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_group_permissions_permission_id ON auth_group_permissions USING btree (permission_id);
+
+
+--
+-- Name: auth_message_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_message_user_id ON auth_message USING btree (user_id);
+
+
+--
+-- Name: auth_permission_content_type_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_permission_content_type_id ON auth_permission USING btree (content_type_id);
+
+
+--
+-- Name: auth_user_groups_group_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_user_groups_group_id ON auth_user_groups USING btree (group_id);
+
+
+--
+-- Name: auth_user_groups_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_user_groups_user_id ON auth_user_groups USING btree (user_id);
+
+
+--
+-- Name: auth_user_user_permissions_permission_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_user_user_permissions_permission_id ON auth_user_user_permissions USING btree (permission_id);
+
+
+--
+-- Name: auth_user_user_permissions_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX auth_user_user_permissions_user_id ON auth_user_user_permissions USING btree (user_id);
+
+
+--
+-- Name: django_admin_log_content_type_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX django_admin_log_content_type_id ON django_admin_log USING btree (content_type_id);
+
+
+--
+-- Name: django_admin_log_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX django_admin_log_user_id ON django_admin_log USING btree (user_id);
+
+
+--
+-- Name: django_session_expire_date; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX django_session_expire_date ON django_session USING btree (expire_date);
+
+
+--
+-- Name: ab_post_msg_ptr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_post
+    ADD CONSTRAINT ab_post_msg_ptr_id_fkey FOREIGN KEY (msg_ptr_id) REFERENCES ab_msg(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ab_post_thread_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_post
+    ADD CONSTRAINT ab_post_thread_id_fkey FOREIGN KEY (thread_id) REFERENCES ab_thread(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ab_post_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_post
+    ADD CONSTRAINT ab_post_user_id_fkey FOREIGN KEY (user_id) REFERENCES ab_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ab_privmsg_msg_ptr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_privmsg
+    ADD CONSTRAINT ab_privmsg_msg_ptr_id_fkey FOREIGN KEY (msg_ptr_id) REFERENCES ab_msg(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ab_thread_board_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_thread
+    ADD CONSTRAINT ab_thread_board_id_fkey FOREIGN KEY (board_id) REFERENCES ab_board(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ab_thread_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_thread
+    ADD CONSTRAINT ab_thread_user_id_fkey FOREIGN KEY (user_id) REFERENCES ab_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ab_wallmsg_msg_ptr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_wallmsg
+    ADD CONSTRAINT ab_wallmsg_msg_ptr_id_fkey FOREIGN KEY (msg_ptr_id) REFERENCES ab_msg(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_group_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT auth_group_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_message_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_message
+    ADD CONSTRAINT auth_message_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_user_groups_group_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT auth_user_groups_group_id_fkey FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: auth_user_user_permissions_permission_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT auth_user_user_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES auth_permission(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: content_type_id_refs_id_728de91f; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_permission
+    ADD CONSTRAINT content_type_id_refs_id_728de91f FOREIGN KEY (content_type_id) REFERENCES django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: django_admin_log_content_type_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY django_admin_log
+    ADD CONSTRAINT django_admin_log_content_type_id_fkey FOREIGN KEY (content_type_id) REFERENCES django_content_type(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: django_admin_log_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY django_admin_log
+    ADD CONSTRAINT django_admin_log_user_id_fkey FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: group_id_refs_id_3cea63fe; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_group_permissions
+    ADD CONSTRAINT group_id_refs_id_3cea63fe FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: parent_id_refs_msg_ptr_id_273bbe65; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_post
+    ADD CONSTRAINT parent_id_refs_msg_ptr_id_273bbe65 FOREIGN KEY (parent_id) REFERENCES ab_post(msg_ptr_id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tag_id_refs_id_f3cf9154; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_thread
+    ADD CONSTRAINT tag_id_refs_id_f3cf9154 FOREIGN KEY (tag_id) REFERENCES ab_tag(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: user_id_refs_id_831107f1; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_user_groups
+    ADD CONSTRAINT user_id_refs_id_831107f1 FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: user_id_refs_id_f2045483; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY auth_user_user_permissions
+    ADD CONSTRAINT user_id_refs_id_f2045483 FOREIGN KEY (user_id) REFERENCES auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+
