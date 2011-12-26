@@ -34,8 +34,9 @@ SET default_with_oids = false;
 
 CREATE TABLE ab_board (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
-    dir character varying(50) NOT NULL
+    title character varying(50) NOT NULL,
+    dir character varying(50) NOT NULL,
+    description text NOT NULL
 );
 
 
@@ -66,7 +67,7 @@ ALTER SEQUENCE ab_board_id_seq OWNED BY ab_board.id;
 -- Name: ab_board_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-SELECT pg_catalog.setval('ab_board_id_seq', 2, true);
+SELECT pg_catalog.setval('ab_board_id_seq', 5, true);
 
 
 --
@@ -75,8 +76,12 @@ SELECT pg_catalog.setval('ab_board_id_seq', 2, true);
 
 CREATE TABLE ab_msg (
     id integer NOT NULL,
+    person_id integer,
+    "time" timestamp with time zone NOT NULL,
     message text NOT NULL,
-    "time" time without time zone NOT NULL,
+    subject character varying(50) NOT NULL,
+    picture character varying(50) NOT NULL,
+    audio character varying(50) NOT NULL,
     show_name boolean NOT NULL,
     show_tripcode boolean NOT NULL
 );
@@ -109,7 +114,93 @@ ALTER SEQUENCE ab_msg_id_seq OWNED BY ab_msg.id;
 -- Name: ab_msg_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-SELECT pg_catalog.setval('ab_msg_id_seq', 1, false);
+SELECT pg_catalog.setval('ab_msg_id_seq', 7, true);
+
+
+--
+-- Name: ab_person; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE TABLE ab_person (
+    id integer NOT NULL,
+    name character varying(50) NOT NULL,
+    tripcode character varying(50) NOT NULL,
+    regdate date NOT NULL,
+    email character varying(75) NOT NULL,
+    password character varying(50) NOT NULL,
+    deleted boolean NOT NULL
+);
+
+
+ALTER TABLE public.ab_person OWNER TO oleg;
+
+--
+-- Name: ab_person_friends; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE TABLE ab_person_friends (
+    id integer NOT NULL,
+    from_person_id integer NOT NULL,
+    to_person_id integer NOT NULL
+);
+
+
+ALTER TABLE public.ab_person_friends OWNER TO oleg;
+
+--
+-- Name: ab_person_friends_id_seq; Type: SEQUENCE; Schema: public; Owner: oleg
+--
+
+CREATE SEQUENCE ab_person_friends_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ab_person_friends_id_seq OWNER TO oleg;
+
+--
+-- Name: ab_person_friends_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
+--
+
+ALTER SEQUENCE ab_person_friends_id_seq OWNED BY ab_person_friends.id;
+
+
+--
+-- Name: ab_person_friends_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
+--
+
+SELECT pg_catalog.setval('ab_person_friends_id_seq', 2, true);
+
+
+--
+-- Name: ab_person_id_seq; Type: SEQUENCE; Schema: public; Owner: oleg
+--
+
+CREATE SEQUENCE ab_person_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ab_person_id_seq OWNER TO oleg;
+
+--
+-- Name: ab_person_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
+--
+
+ALTER SEQUENCE ab_person_id_seq OWNED BY ab_person.id;
+
+
+--
+-- Name: ab_person_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
+--
+
+SELECT pg_catalog.setval('ab_person_id_seq', 11, true);
 
 
 --
@@ -118,10 +209,8 @@ SELECT pg_catalog.setval('ab_msg_id_seq', 1, false);
 
 CREATE TABLE ab_post (
     msg_ptr_id integer NOT NULL,
-    thread_id integer NOT NULL,
-    user_id integer NOT NULL,
-    parent_id integer NOT NULL,
-    subject character varying(50) NOT NULL
+    thread_id integer,
+    parent_id integer
 );
 
 
@@ -133,8 +222,7 @@ ALTER TABLE public.ab_post OWNER TO oleg;
 
 CREATE TABLE ab_privmsg (
     msg_ptr_id integer NOT NULL,
-    to_id character varying(50) NOT NULL,
-    from_id character varying(50) NOT NULL
+    destination_id integer
 );
 
 
@@ -178,7 +266,7 @@ ALTER SEQUENCE ab_tag_id_seq OWNED BY ab_tag.id;
 -- Name: ab_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-SELECT pg_catalog.setval('ab_tag_id_seq', 4, true);
+SELECT pg_catalog.setval('ab_tag_id_seq', 1, true);
 
 
 --
@@ -186,66 +274,31 @@ SELECT pg_catalog.setval('ab_tag_id_seq', 4, true);
 --
 
 CREATE TABLE ab_thread (
-    id integer NOT NULL,
-    board_id integer NOT NULL,
-    user_id integer NOT NULL,
-    tag_id integer NOT NULL,
-    subject character varying(50) NOT NULL
+    msg_ptr_id integer NOT NULL,
+    board_id integer NOT NULL
 );
 
 
 ALTER TABLE public.ab_thread OWNER TO oleg;
 
 --
--- Name: ab_thread_id_seq; Type: SEQUENCE; Schema: public; Owner: oleg
+-- Name: ab_thread_tag; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
 --
 
-CREATE SEQUENCE ab_thread_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER TABLE public.ab_thread_id_seq OWNER TO oleg;
-
---
--- Name: ab_thread_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
---
-
-ALTER SEQUENCE ab_thread_id_seq OWNED BY ab_thread.id;
-
-
---
--- Name: ab_thread_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
---
-
-SELECT pg_catalog.setval('ab_thread_id_seq', 1, true);
-
-
---
--- Name: ab_user; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
---
-
-CREATE TABLE ab_user (
+CREATE TABLE ab_thread_tag (
     id integer NOT NULL,
-    name character varying(50) NOT NULL,
-    tripcode character varying(50) NOT NULL,
-    regdate time without time zone NOT NULL,
-    email character varying(75) NOT NULL,
-    password character varying(50) NOT NULL,
-    deleted boolean NOT NULL
+    thread_id integer NOT NULL,
+    tag_id integer NOT NULL
 );
 
 
-ALTER TABLE public.ab_user OWNER TO oleg;
+ALTER TABLE public.ab_thread_tag OWNER TO oleg;
 
 --
--- Name: ab_user_id_seq; Type: SEQUENCE; Schema: public; Owner: oleg
+-- Name: ab_thread_tag_id_seq; Type: SEQUENCE; Schema: public; Owner: oleg
 --
 
-CREATE SEQUENCE ab_user_id_seq
+CREATE SEQUENCE ab_thread_tag_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -253,34 +306,21 @@ CREATE SEQUENCE ab_user_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.ab_user_id_seq OWNER TO oleg;
+ALTER TABLE public.ab_thread_tag_id_seq OWNER TO oleg;
 
 --
--- Name: ab_user_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
+-- Name: ab_thread_tag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: oleg
 --
 
-ALTER SEQUENCE ab_user_id_seq OWNED BY ab_user.id;
-
-
---
--- Name: ab_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
---
-
-SELECT pg_catalog.setval('ab_user_id_seq', 2, true);
+ALTER SEQUENCE ab_thread_tag_id_seq OWNED BY ab_thread_tag.id;
 
 
 --
--- Name: ab_wallmsg; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
+-- Name: ab_thread_tag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-CREATE TABLE ab_wallmsg (
-    msg_ptr_id integer NOT NULL,
-    to_id character varying(50) NOT NULL,
-    from_id character varying(50) NOT NULL
-);
+SELECT pg_catalog.setval('ab_thread_tag_id_seq', 1, true);
 
-
-ALTER TABLE public.ab_wallmsg OWNER TO oleg;
 
 --
 -- Name: auth_group; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
@@ -443,7 +483,7 @@ ALTER SEQUENCE auth_permission_id_seq OWNED BY auth_permission.id;
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-SELECT pg_catalog.setval('auth_permission_id_seq', 48, true);
+SELECT pg_catalog.setval('auth_permission_id_seq', 45, true);
 
 
 --
@@ -578,6 +618,36 @@ SELECT pg_catalog.setval('auth_user_user_permissions_id_seq', 1, false);
 
 
 --
+-- Name: board_view; Type: VIEW; Schema: public; Owner: oleg
+--
+
+CREATE VIEW board_view AS
+    SELECT ab_msg.person_id AS p_id, ab_board.id AS b_id FROM (((ab_msg JOIN ab_post ON ((ab_msg.id = ab_post.msg_ptr_id))) JOIN ab_thread ON ((ab_post.thread_id = ab_thread.msg_ptr_id))) JOIN ab_board ON ((ab_thread.board_id = ab_board.id)));
+
+
+ALTER TABLE public.board_view OWNER TO oleg;
+
+--
+-- Name: stat_view; Type: VIEW; Schema: public; Owner: oleg
+--
+
+CREATE VIEW stat_view AS
+    SELECT count(*) AS count, v.p_id, v.b_id FROM board_view v GROUP BY v.b_id, v.p_id;
+
+
+ALTER TABLE public.stat_view OWNER TO oleg;
+
+--
+-- Name: bid_view; Type: VIEW; Schema: public; Owner: oleg
+--
+
+CREATE VIEW bid_view AS
+    SELECT stat_view.b_id AS id, max(stat_view.count) AS max FROM stat_view GROUP BY stat_view.b_id;
+
+
+ALTER TABLE public.bid_view OWNER TO oleg;
+
+--
 -- Name: django_admin_log; Type: TABLE; Schema: public; Owner: oleg; Tablespace: 
 --
 
@@ -621,7 +691,7 @@ ALTER SEQUENCE django_admin_log_id_seq OWNED BY django_admin_log.id;
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-SELECT pg_catalog.setval('django_admin_log_id_seq', 12, true);
+SELECT pg_catalog.setval('django_admin_log_id_seq', 10, true);
 
 
 --
@@ -663,7 +733,7 @@ ALTER SEQUENCE django_content_type_id_seq OWNED BY django_content_type.id;
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: oleg
 --
 
-SELECT pg_catalog.setval('django_content_type_id_seq', 16, true);
+SELECT pg_catalog.setval('django_content_type_id_seq', 15, true);
 
 
 --
@@ -721,6 +791,26 @@ SELECT pg_catalog.setval('django_site_id_seq', 1, true);
 
 
 --
+-- Name: my_view; Type: VIEW; Schema: public; Owner: oleg
+--
+
+CREATE VIEW my_view AS
+    SELECT ab_msg.id AS msg_id, ab_board.title AS b_id FROM ab_msg, ab_post, ab_thread, ab_board WHERE (((ab_thread.board_id = ab_board.id) AND (ab_post.thread_id = ab_thread.msg_ptr_id)) AND (ab_msg.id = ab_post.msg_ptr_id));
+
+
+ALTER TABLE public.my_view OWNER TO oleg;
+
+--
+-- Name: res_view; Type: VIEW; Schema: public; Owner: oleg
+--
+
+CREATE VIEW res_view AS
+    SELECT v.b_id, v.p_id FROM (bid_view b JOIN stat_view v ON (((v.count = b.max) AND (b.id = v.b_id))));
+
+
+ALTER TABLE public.res_view OWNER TO oleg;
+
+--
 -- Name: id; Type: DEFAULT; Schema: public; Owner: oleg
 --
 
@@ -738,6 +828,20 @@ ALTER TABLE ab_msg ALTER COLUMN id SET DEFAULT nextval('ab_msg_id_seq'::regclass
 -- Name: id; Type: DEFAULT; Schema: public; Owner: oleg
 --
 
+ALTER TABLE ab_person ALTER COLUMN id SET DEFAULT nextval('ab_person_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ab_person_friends ALTER COLUMN id SET DEFAULT nextval('ab_person_friends_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: oleg
+--
+
 ALTER TABLE ab_tag ALTER COLUMN id SET DEFAULT nextval('ab_tag_id_seq'::regclass);
 
 
@@ -745,14 +849,7 @@ ALTER TABLE ab_tag ALTER COLUMN id SET DEFAULT nextval('ab_tag_id_seq'::regclass
 -- Name: id; Type: DEFAULT; Schema: public; Owner: oleg
 --
 
-ALTER TABLE ab_thread ALTER COLUMN id SET DEFAULT nextval('ab_thread_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: oleg
---
-
-ALTER TABLE ab_user ALTER COLUMN id SET DEFAULT nextval('ab_user_id_seq'::regclass);
+ALTER TABLE ab_thread_tag ALTER COLUMN id SET DEFAULT nextval('ab_thread_tag_id_seq'::regclass);
 
 
 --
@@ -829,9 +926,12 @@ ALTER TABLE django_site ALTER COLUMN id SET DEFAULT nextval('django_site_id_seq'
 -- Data for Name: ab_board; Type: TABLE DATA; Schema: public; Owner: oleg
 --
 
-COPY ab_board (id, name, dir) FROM stdin;
-1	bred	/b
-2	erlang	/erl
+COPY ab_board (id, title, dir, description) FROM stdin;
+1	Bred	/b	
+2	Programming	/p	
+3	Database	/d	
+4	Anime	/a	
+5	Programming	/p	
 \.
 
 
@@ -839,7 +939,43 @@ COPY ab_board (id, name, dir) FROM stdin;
 -- Data for Name: ab_msg; Type: TABLE DATA; Schema: public; Owner: oleg
 --
 
-COPY ab_msg (id, message, "time", show_name, show_tripcode) FROM stdin;
+COPY ab_msg (id, person_id, "time", message, subject, picture, audio, show_name, show_tripcode) FROM stdin;
+1	4	2011-12-26 23:37:19.559566+04	hgdfhgd gfdh dgf				f	f
+2	8	2011-12-26 23:38:04.236456+04	ngfbxngfxngfgfngnf gf hd g fgdf hfgd hdgfhgfdh dg				f	f
+3	9	2011-12-26 23:38:15.183686+04	grergwegre				f	f
+4	9	2011-12-26 23:38:26.523785+04	fdsgfdsgfdsg				f	f
+5	1	2011-12-27 00:31:33.343195+04	gfdsgfdgsfd				f	f
+6	1	2011-12-27 00:31:53.958679+04	bfsgfdsgfdsgfds				f	f
+7	1	2011-12-27 00:33:00.931688+04	gsfd				f	f
+\.
+
+
+--
+-- Data for Name: ab_person; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY ab_person (id, name, tripcode, regdate, email, password, deleted) FROM stdin;
+1	Alexey Medvedev		2011-12-26			f
+2	Anton Maslennikov		2011-12-26			f
+3	Artem Dudnik		2011-12-26			f
+4	Edgar Pilipson		2011-12-26			f
+5	Maks Malugin		2011-12-25			f
+6	Oleg Baskakov		2011-12-24			f
+7	Polina Sechenih		2011-12-23			f
+8	Sofia Kuznezova		2011-12-22			f
+9	Suzana Antonian		2011-12-21			f
+10	Sergey Semenov	greyss	2011-12-20			f
+11	Kate Reim	shigo	2011-12-26			f
+\.
+
+
+--
+-- Data for Name: ab_person_friends; Type: TABLE DATA; Schema: public; Owner: oleg
+--
+
+COPY ab_person_friends (id, from_person_id, to_person_id) FROM stdin;
+1	11	6
+2	6	11
 \.
 
 
@@ -847,7 +983,12 @@ COPY ab_msg (id, message, "time", show_name, show_tripcode) FROM stdin;
 -- Data for Name: ab_post; Type: TABLE DATA; Schema: public; Owner: oleg
 --
 
-COPY ab_post (msg_ptr_id, thread_id, user_id, parent_id, subject) FROM stdin;
+COPY ab_post (msg_ptr_id, thread_id, parent_id) FROM stdin;
+2	1	\N
+3	1	2
+4	1	2
+6	5	\N
+7	5	\N
 \.
 
 
@@ -855,7 +996,7 @@ COPY ab_post (msg_ptr_id, thread_id, user_id, parent_id, subject) FROM stdin;
 -- Data for Name: ab_privmsg; Type: TABLE DATA; Schema: public; Owner: oleg
 --
 
-COPY ab_privmsg (msg_ptr_id, to_id, from_id) FROM stdin;
+COPY ab_privmsg (msg_ptr_id, destination_id) FROM stdin;
 \.
 
 
@@ -864,7 +1005,7 @@ COPY ab_privmsg (msg_ptr_id, to_id, from_id) FROM stdin;
 --
 
 COPY ab_tag (id, name, description) FROM stdin;
-4	dummy	just nothing
+1	ololo	
 \.
 
 
@@ -872,26 +1013,18 @@ COPY ab_tag (id, name, description) FROM stdin;
 -- Data for Name: ab_thread; Type: TABLE DATA; Schema: public; Owner: oleg
 --
 
-COPY ab_thread (id, board_id, user_id, tag_id, subject) FROM stdin;
-1	1	1	4	hello segodnya den skverniy
+COPY ab_thread (msg_ptr_id, board_id) FROM stdin;
+1	5
+5	4
 \.
 
 
 --
--- Data for Name: ab_user; Type: TABLE DATA; Schema: public; Owner: oleg
+-- Data for Name: ab_thread_tag; Type: TABLE DATA; Schema: public; Owner: oleg
 --
 
-COPY ab_user (id, name, tripcode, regdate, email, password, deleted) FROM stdin;
-1	Oleg Baskakov	spetz	06:48:57.954508		12345	f
-2	Arseniy Sysolatin	ar7n	06:49:20.309702			f
-\.
-
-
---
--- Data for Name: ab_wallmsg; Type: TABLE DATA; Schema: public; Owner: oleg
---
-
-COPY ab_wallmsg (msg_ptr_id, to_id, from_id) FROM stdin;
+COPY ab_thread_tag (id, thread_id, tag_id) FROM stdin;
+1	1	1
 \.
 
 
@@ -948,30 +1081,27 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 22	Can add log entry	8	add_logentry
 23	Can change log entry	8	change_logentry
 24	Can delete log entry	8	delete_logentry
-25	Can add user	9	add_user
-26	Can change user	9	change_user
-27	Can delete user	9	delete_user
+25	Can add person	9	add_person
+26	Can change person	9	change_person
+27	Can delete person	9	delete_person
 28	Can add board	10	add_board
 29	Can change board	10	change_board
 30	Can delete board	10	delete_board
-31	Can add msg	11	add_msg
-32	Can change msg	11	change_msg
-33	Can delete msg	11	delete_msg
-34	Can add thread	12	add_thread
-35	Can change thread	12	change_thread
-36	Can delete thread	12	delete_thread
-37	Can add post	13	add_post
-38	Can change post	13	change_post
-39	Can delete post	13	delete_post
-40	Can add wall msg	14	add_wallmsg
-41	Can change wall msg	14	change_wallmsg
-42	Can delete wall msg	14	delete_wallmsg
+31	Can add tag	11	add_tag
+32	Can change tag	11	change_tag
+33	Can delete tag	11	delete_tag
+34	Can add msg	12	add_msg
+35	Can change msg	12	change_msg
+36	Can delete msg	12	delete_msg
+37	Can add thread	13	add_thread
+38	Can change thread	13	change_thread
+39	Can delete thread	13	delete_thread
+40	Can add post	14	add_post
+41	Can change post	14	change_post
+42	Can delete post	14	delete_post
 43	Can add priv msg	15	add_privmsg
 44	Can change priv msg	15	change_privmsg
 45	Can delete priv msg	15	delete_privmsg
-46	Can add tag	16	add_tag
-47	Can change tag	16	change_tag
-48	Can delete tag	16	delete_tag
 \.
 
 
@@ -980,7 +1110,7 @@ COPY auth_permission (id, name, content_type_id, codename) FROM stdin;
 --
 
 COPY auth_user (id, username, first_name, last_name, email, password, is_staff, is_active, is_superuser, last_login, date_joined) FROM stdin;
-1	oleg			spetz911@gmail.com	sha1$b6655$5ec58787569a10dae8b921a9d83306dfab519c08	t	t	t	2011-11-30 16:21:19.072539+04	2011-11-30 16:11:12.940544+04
+1	oleg			spetz911@gmail.com	sha1$e0d3a$e464e12c9e30c3604c8c246b99db6eb830ab097a	t	t	t	2011-12-26 23:34:08.319249+04	2011-12-26 23:30:55.630322+04
 \.
 
 
@@ -1005,18 +1135,16 @@ COPY auth_user_user_permissions (id, user_id, permission_id) FROM stdin;
 --
 
 COPY django_admin_log (id, action_time, user_id, content_type_id, object_id, object_repr, action_flag, change_message) FROM stdin;
-1	2011-11-30 16:36:08.809266+04	1	10	1	bred	1	
-2	2011-11-30 16:36:20.876407+04	1	10	2	anime	1	
-3	2011-11-30 16:45:17.736463+04	1	10	1	bred	1	
-4	2011-11-30 16:45:41.89185+04	1	10	2	erlang	1	
-5	2011-11-30 16:47:16.042527+04	1	16	2	bre	1	
-6	2011-11-30 16:47:26.251369+04	1	16	2	bre	3	
-7	2011-11-30 16:47:31.712138+04	1	16	3	bre	1	
-8	2011-11-30 16:47:37.575547+04	1	16	3	bre	3	
-9	2011-11-30 16:48:03.44434+04	1	16	4	dummy	1	
-10	2011-11-30 16:48:57.956714+04	1	9	1	Oleg Baskakov	1	
-11	2011-11-30 16:49:20.312193+04	1	9	2	Arseniy Sysolatin	1	
-12	2011-11-30 16:51:09.024254+04	1	12	1	hello segodnya den skverniy	1	
+1	2011-12-26 23:34:33.1499+04	1	9	11	shigo	1	
+2	2011-12-26 23:37:01.942414+04	1	10	5	Programming	1	
+3	2011-12-26 23:37:13.379863+04	1	11	1	ololo	1	
+4	2011-12-26 23:37:19.57396+04	1	13	1	hgdfhgd gfdh dgf...	1	
+5	2011-12-26 23:38:04.241197+04	1	14	2	ngfbxngfxngfgfngnf gf hd...	1	
+6	2011-12-26 23:38:15.187461+04	1	14	3	grergwegre...	1	
+7	2011-12-26 23:38:26.526459+04	1	14	4	fdsgfdsgfdsg...	1	
+8	2011-12-27 00:31:33.34925+04	1	13	5	gfdsgfdgsfd...	1	
+9	2011-12-27 00:31:53.962825+04	1	14	6	bfsgfdsgfdsgfds...	1	
+10	2011-12-27 00:33:00.936292+04	1	14	7	gsfd...	1	
 \.
 
 
@@ -1033,14 +1161,13 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 6	session	sessions	session
 7	site	sites	site
 8	log entry	admin	logentry
-9	user	ab	user
+9	person	ab	person
 10	board	ab	board
-11	msg	ab	msg
-12	thread	ab	thread
-13	post	ab	post
-14	wall msg	ab	wallmsg
+11	tag	ab	tag
+12	msg	ab	msg
+13	thread	ab	thread
+14	post	ab	post
 15	priv msg	ab	privmsg
-16	tag	ab	tag
 \.
 
 
@@ -1049,8 +1176,7 @@ COPY django_content_type (id, name, app_label, model) FROM stdin;
 --
 
 COPY django_session (session_key, session_data, expire_date) FROM stdin;
-89a222c7b7d864f52be8be77c521f390	NzZmZGRiMzQ3NDUxYWY2MzZmZTY1YjJjMGU3ODkzM2YwNDg5NjY2MjqAAn1xAShVEl9hdXRoX3Vz\nZXJfYmFja2VuZHECVSlkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZHED\nVQ1fYXV0aF91c2VyX2lkcQRLAXUu\n	2011-12-14 16:14:18.701035+04
-5e804b648fdf9bdb99750b39c2891261	NzZmZGRiMzQ3NDUxYWY2MzZmZTY1YjJjMGU3ODkzM2YwNDg5NjY2MjqAAn1xAShVEl9hdXRoX3Vz\nZXJfYmFja2VuZHECVSlkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZHED\nVQ1fYXV0aF91c2VyX2lkcQRLAXUu\n	2011-12-14 16:21:19.084347+04
+2c18950f03ad29bc3fcb251c54519d20	NzZmZGRiMzQ3NDUxYWY2MzZmZTY1YjJjMGU3ODkzM2YwNDg5NjY2MjqAAn1xAShVEl9hdXRoX3Vz\nZXJfYmFja2VuZHECVSlkamFuZ28uY29udHJpYi5hdXRoLmJhY2tlbmRzLk1vZGVsQmFja2VuZHED\nVQ1fYXV0aF91c2VyX2lkcQRLAXUu\n	2012-01-09 23:34:08.331113+04
 \.
 
 
@@ -1077,6 +1203,30 @@ ALTER TABLE ONLY ab_board
 
 ALTER TABLE ONLY ab_msg
     ADD CONSTRAINT ab_msg_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_person_friends_from_person_id_to_person_id_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_person_friends
+    ADD CONSTRAINT ab_person_friends_from_person_id_to_person_id_key UNIQUE (from_person_id, to_person_id);
+
+
+--
+-- Name: ab_person_friends_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_person_friends
+    ADD CONSTRAINT ab_person_friends_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ab_person_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+--
+
+ALTER TABLE ONLY ab_person
+    ADD CONSTRAINT ab_person_pkey PRIMARY KEY (id);
 
 
 --
@@ -1108,23 +1258,23 @@ ALTER TABLE ONLY ab_tag
 --
 
 ALTER TABLE ONLY ab_thread
-    ADD CONSTRAINT ab_thread_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT ab_thread_pkey PRIMARY KEY (msg_ptr_id);
 
 
 --
--- Name: ab_user_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+-- Name: ab_thread_tag_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
 --
 
-ALTER TABLE ONLY ab_user
-    ADD CONSTRAINT ab_user_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY ab_thread_tag
+    ADD CONSTRAINT ab_thread_tag_pkey PRIMARY KEY (id);
 
 
 --
--- Name: ab_wallmsg_pkey; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
+-- Name: ab_thread_tag_thread_id_tag_id_key; Type: CONSTRAINT; Schema: public; Owner: oleg; Tablespace: 
 --
 
-ALTER TABLE ONLY ab_wallmsg
-    ADD CONSTRAINT ab_wallmsg_pkey PRIMARY KEY (msg_ptr_id);
+ALTER TABLE ONLY ab_thread_tag
+    ADD CONSTRAINT ab_thread_tag_thread_id_tag_id_key UNIQUE (thread_id, tag_id);
 
 
 --
@@ -1272,6 +1422,27 @@ ALTER TABLE ONLY django_site
 
 
 --
+-- Name: ab_msg_person_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_msg_person_id ON ab_msg USING btree (person_id);
+
+
+--
+-- Name: ab_person_friends_from_person_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_person_friends_from_person_id ON ab_person_friends USING btree (from_person_id);
+
+
+--
+-- Name: ab_person_friends_to_person_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+--
+
+CREATE INDEX ab_person_friends_to_person_id ON ab_person_friends USING btree (to_person_id);
+
+
+--
 -- Name: ab_post_parent_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
 --
 
@@ -1286,10 +1457,10 @@ CREATE INDEX ab_post_thread_id ON ab_post USING btree (thread_id);
 
 
 --
--- Name: ab_post_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+-- Name: ab_privmsg_destination_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
 --
 
-CREATE INDEX ab_post_user_id ON ab_post USING btree (user_id);
+CREATE INDEX ab_privmsg_destination_id ON ab_privmsg USING btree (destination_id);
 
 
 --
@@ -1300,17 +1471,17 @@ CREATE INDEX ab_thread_board_id ON ab_thread USING btree (board_id);
 
 
 --
--- Name: ab_thread_tag_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+-- Name: ab_thread_tag_tag_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
 --
 
-CREATE INDEX ab_thread_tag_id ON ab_thread USING btree (tag_id);
+CREATE INDEX ab_thread_tag_tag_id ON ab_thread_tag USING btree (tag_id);
 
 
 --
--- Name: ab_thread_user_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
+-- Name: ab_thread_tag_thread_id; Type: INDEX; Schema: public; Owner: oleg; Tablespace: 
 --
 
-CREATE INDEX ab_thread_user_id ON ab_thread USING btree (user_id);
+CREATE INDEX ab_thread_tag_thread_id ON ab_thread_tag USING btree (thread_id);
 
 
 --
@@ -1391,6 +1562,14 @@ CREATE INDEX django_session_expire_date ON django_session USING btree (expire_da
 
 
 --
+-- Name: ab_msg_person_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_msg
+    ADD CONSTRAINT ab_msg_person_id_fkey FOREIGN KEY (person_id) REFERENCES ab_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: ab_post_msg_ptr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
 --
 
@@ -1403,15 +1582,15 @@ ALTER TABLE ONLY ab_post
 --
 
 ALTER TABLE ONLY ab_post
-    ADD CONSTRAINT ab_post_thread_id_fkey FOREIGN KEY (thread_id) REFERENCES ab_thread(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT ab_post_thread_id_fkey FOREIGN KEY (thread_id) REFERENCES ab_thread(msg_ptr_id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
--- Name: ab_post_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+-- Name: ab_privmsg_destination_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
 --
 
-ALTER TABLE ONLY ab_post
-    ADD CONSTRAINT ab_post_user_id_fkey FOREIGN KEY (user_id) REFERENCES ab_user(id) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE ONLY ab_privmsg
+    ADD CONSTRAINT ab_privmsg_destination_id_fkey FOREIGN KEY (destination_id) REFERENCES ab_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -1431,19 +1610,19 @@ ALTER TABLE ONLY ab_thread
 
 
 --
--- Name: ab_thread_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+-- Name: ab_thread_msg_ptr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
 --
 
 ALTER TABLE ONLY ab_thread
-    ADD CONSTRAINT ab_thread_user_id_fkey FOREIGN KEY (user_id) REFERENCES ab_user(id) DEFERRABLE INITIALLY DEFERRED;
+    ADD CONSTRAINT ab_thread_msg_ptr_id_fkey FOREIGN KEY (msg_ptr_id) REFERENCES ab_msg(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
--- Name: ab_wallmsg_msg_ptr_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+-- Name: ab_thread_tag_tag_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: oleg
 --
 
-ALTER TABLE ONLY ab_wallmsg
-    ADD CONSTRAINT ab_wallmsg_msg_ptr_id_fkey FOREIGN KEY (msg_ptr_id) REFERENCES ab_msg(id) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE ONLY ab_thread_tag
+    ADD CONSTRAINT ab_thread_tag_tag_id_fkey FOREIGN KEY (tag_id) REFERENCES ab_tag(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -1503,6 +1682,14 @@ ALTER TABLE ONLY django_admin_log
 
 
 --
+-- Name: from_person_id_refs_id_b21837; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_person_friends
+    ADD CONSTRAINT from_person_id_refs_id_b21837 FOREIGN KEY (from_person_id) REFERENCES ab_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: group_id_refs_id_3cea63fe; Type: FK CONSTRAINT; Schema: public; Owner: oleg
 --
 
@@ -1519,11 +1706,19 @@ ALTER TABLE ONLY ab_post
 
 
 --
--- Name: tag_id_refs_id_f3cf9154; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+-- Name: thread_id_refs_msg_ptr_id_57eb3af4; Type: FK CONSTRAINT; Schema: public; Owner: oleg
 --
 
-ALTER TABLE ONLY ab_thread
-    ADD CONSTRAINT tag_id_refs_id_f3cf9154 FOREIGN KEY (tag_id) REFERENCES ab_tag(id) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE ONLY ab_thread_tag
+    ADD CONSTRAINT thread_id_refs_msg_ptr_id_57eb3af4 FOREIGN KEY (thread_id) REFERENCES ab_thread(msg_ptr_id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: to_person_id_refs_id_b21837; Type: FK CONSTRAINT; Schema: public; Owner: oleg
+--
+
+ALTER TABLE ONLY ab_person_friends
+    ADD CONSTRAINT to_person_id_refs_id_b21837 FOREIGN KEY (to_person_id) REFERENCES ab_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --

@@ -2,67 +2,72 @@ from django.db.models import *
 
 # Create your models here.
 
-class User(Model):
+class Person(Model):
+	id = AutoField(primary_key=True) # it sets automaticly
 	name = CharField(max_length=50)
-	tripcode = CharField(max_length=50)
-	regdate = TimeField(auto_now=True)
+	tripcode = CharField(max_length=50, blank = True)
+	regdate = DateField(auto_now_add=True)
 	email = EmailField(blank = True)
 	password = CharField(max_length=50, blank = True)
+	friends = ManyToManyField('self', null=True, blank=True)
 	deleted = BooleanField(default = False)
 	
-
 	def __unicode__(self):
-		return self.name
+		if self.tripcode:
+			return self.tripcode
+		else:
+			return self.name
+			
 
 ## add inheritance here
 
 class Board(Model):
-	name = CharField(max_length=50)
-	dir = CharField(max_length=50)
+	title = CharField(max_length=50)
+	dir = CharField(max_length=50, blank = True)
+	description = TextField(blank = True)
 
 	def __unicode__(self):
-		return self.name
-
-class Msg(Model):
-	message = TextField()
-	time = TimeField(auto_now=True)
-	show_name = BooleanField()
-	show_tripcode = BooleanField()
-
-class Thread(Model):
-	board = ForeignKey('Board')
-	user = ForeignKey('User')
-	tag = ForeignKey('Tag')
-	subject = CharField(max_length=50)
-
-	def __unicode__(self):
-		return self.subject
+		return self.title
 
 
-class Post(Msg):
-	thread = ForeignKey('Thread')
-	user = ForeignKey('User')
-	parent = ForeignKey('Post')
-	subject = CharField(max_length=50)
-
-	def __unicode__(self):
-		return self.subject
-
-class WallMsg(Msg):
-	to_id = CharField(max_length=50)
-	from_id = CharField(max_length=50)
-	
-class PrivMsg(Msg):
-	to_id = CharField(max_length=50)
-	from_id = CharField(max_length=50)
 
 class Tag(Model):
 	name = CharField(max_length=50)
 	description = TextField(blank = True)
-	
+	# thread = ManyToManyField(Thread) creates implicit
 
 	def __unicode__(self):
 		return self.name
+
+
+
+
+class Msg(Model):
+	person = ForeignKey(Person, null = True, blank=True)
+	time = DateTimeField(auto_now=True)
+	message = TextField(blank = True)
+	subject = CharField(max_length=50, blank=True)
+	picture = CharField(max_length=50, blank=True)
+	audio   = CharField(max_length=50, blank=True)
+	show_name = BooleanField(default = False)
+	show_tripcode = BooleanField(default = False)
+
+	def __unicode__(self):
+		if self.subject:
+			return  self.subject
+		else:
+			return " ".join(self.message.split()[:3]) + "..."
+
+class Thread(Msg):
+	board = ForeignKey(Board)
+	tag = ManyToManyField(Tag, blank=True, null = True)
+
+class Post(Msg):
+	thread = ForeignKey(Thread, null = True)
+	parent = ForeignKey('self', null=True, blank=True)
+
+class PrivMsg(Msg):
+	destination = ForeignKey(Person, null = True)
 
 
 
