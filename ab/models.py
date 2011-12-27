@@ -46,11 +46,11 @@ class Msg(Model):
 	person = ForeignKey(Person, null = True, blank=True)
 	time = DateTimeField(auto_now=True)
 	message = TextField(blank = True)
-	subject = CharField(max_length=50, blank=True)
-	picture = CharField(max_length=50, blank=True)
-	audio   = CharField(max_length=50, blank=True)
-	show_name = BooleanField(default = False)
-	show_tripcode = BooleanField(default = False)
+	subject = CharField(max_length=50, blank=True, null = True)
+	picture = CharField(max_length=50, blank=True, null = True)
+	audio   = CharField(max_length=50, blank=True, null = True)
+	show_name = BooleanField(default = False, null = True)
+	show_tripcode = BooleanField(default = False, null = True)
 
 	def __unicode__(self):
 		if self.subject:

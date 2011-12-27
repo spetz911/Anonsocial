@@ -39,13 +39,16 @@ class Tag(Model):
 	def __unicode__(self):
 		return self.name
 
+
+
+
 class Msg(Model):
 	person = ForeignKey(Person, null = True, blank=True)
 	time = DateTimeField(auto_now=True)
 	message = TextField(blank = True)
-	subject = CharField(max_length=50, blank=True)
-	picture = CharField(max_length=50, blank=True)
-	audio   = CharField(max_length=50, blank=True)
+	subject = CharField(max_length=50, blank=True, null = True)
+	picture = CharField(max_length=50, blank=True, null = True)
+	audio   = CharField(max_length=50, blank=True, null = True)
 	show_name = BooleanField(default = False)
 	show_tripcode = BooleanField(default = False)
 
@@ -65,7 +68,6 @@ class Post(Msg):
 
 class PrivMsg(Msg):
 	destination = ForeignKey(Person, null = True)
-
 
 
 

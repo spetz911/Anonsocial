@@ -1,19 +1,15 @@
 CREATE OR REPLACE FUNCTION
-tole(parent_id int, lvl int)
-	RETURNS TABLE(id int, shift int, msg VARCHAR(20)) AS $$
+thread_listing(msg_id int, lvl int)
+	RETURNS TABLE(id int, shift int, msg text) AS $$
 DECLARE
-	mviews RECORD;
+--	mviews RECORD;
 	i int;
 BEGIN
-	FOR mviews IN SELECT books.id, lvl, books.name FROM books LOOP
-		RETURN QUERY SELECT mviews.id, mviews.lvl, mviews.name;
-		RETURN QUERY SELECT * FROM tole(mviews.id, lvl+1);
-		
+	FOR i IN SELECT ab_post.msg_ptr_id FROM ab_post WHERE ab_post.parent_id = msg_id LOOP
+		RETURN QUERY SELECT i, lvl, ab_msg.message FROM ab_msg WHERE ab_msg.id = i;
+		RETURN QUERY SELECT * FROM tole(i, lvl+1);
 	END LOOP;
 
-
-*/
-	END IF;
 END;
 $$ LANGUAGE plpgsql;
 
