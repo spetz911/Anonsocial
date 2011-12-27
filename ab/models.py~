@@ -49,8 +49,8 @@ class Msg(Model):
 	subject = CharField(max_length=50, blank=True, null = True)
 	picture = CharField(max_length=50, blank=True, null = True)
 	audio   = CharField(max_length=50, blank=True, null = True)
-	show_name = BooleanField(default = False)
-	show_tripcode = BooleanField(default = False)
+	show_name = BooleanField(default = False, null = True)
+	show_tripcode = BooleanField(default = False, null = True)
 
 	def __unicode__(self):
 		if self.subject:
@@ -64,7 +64,7 @@ class Thread(Msg):
 
 class Post(Msg):
 	thread = ForeignKey(Thread, null = True)
-	parent = ForeignKey('self', null=True, blank=True)
+	parent = ForeignKey(Msg, null=True, blank=True)
 
 class PrivMsg(Msg):
 	destination = ForeignKey(Person, null = True)

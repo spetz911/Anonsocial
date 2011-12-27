@@ -64,12 +64,10 @@ class Thread(Msg):
 
 class Post(Msg):
 	thread = ForeignKey(Thread, null = True)
-	parent = ForeignKey('self', null=True, blank=True)
+	parent = ForeignKey(Msg, null=True, blank=True)
 
 class PrivMsg(Msg):
 	destination = ForeignKey(Person, null = True)
-
-
 
 
 
