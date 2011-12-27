@@ -17,7 +17,9 @@ SELECT v.b_id, v.p_id from bid_view AS b JOIN stat_view AS v
 	ON v.count = b.max
 	AND b.id = v.b_id;
 
-EXPLAIN SELECT b.title AS board_name, p.name AS max_poster FROM ab_board AS b
+SELECT b.title AS board_name, p.name AS max_poster FROM ab_board AS b
 JOIN res_view AS v ON b.id = v.b_id
 JOIN ab_person AS p ON p.id = v.p_id;
+
+-- EXPLAIN
 
